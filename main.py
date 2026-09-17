@@ -259,3 +259,38 @@ adm_network_diameter = nx.diameter(G)
 """
 global_efficiency = nx.global_efficiency(G)
 adm_global_efficiency = nx.global_efficiency(G)
+
+
+print("End");
+
+# %% Clustering Coefficient
+# It measures how I am important to my neibhors. 
+# closest to one, means not that important, close to zero, mean that they can no longer connect without me
+
+"""
+  Conceptual questions
+
+  1. What does a clustering coefficient measure about a node’s neighbors?
+  2. If node A is connected to B and C, what additional edge would make A part of a triangle?
+  3. Why can a node with many neighbors still have a low clustering coefficient?
+  4. What is the maximum possible clustering coefficient?
+  5. What does a coefficient of 0 mean?
+  6. What does a coefficient of 1 mean for a node?
+"""
+
+
+adm_cluster_coefficient_of_index_4 = nx.clustering(administrator_clan, 5)
+# knowing that clustering c oefficient does not remove me, it just questions, how c lustered are my neighbords with
+# themselfs, closest to one, very tigh, close to zero, almost none, im the glue of the group
+
+"""
+So for instance, i've eran the command in a cleary neighborhood. The number 4, was cluster coefficient zero, people around him barely
+connected
+
+While the number five, got 0.33 not bad but not great (great would be 1)
+
+the same run for the clan administrator thorugh out 0.1, less than the number 5, meaning that he is a super glue or bridge
+- Near 1: neighbors form a tight, redundant group.
+  - Near 0: neighbors are mostly disconnected from one another
+"""
+adm_cluster_coefficient_of_administrator = nx.clustering(administrator_clan, 33)

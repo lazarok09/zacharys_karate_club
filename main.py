@@ -12,6 +12,8 @@ G = nx.karate_club_graph()
 
 number_of_nodes = G.number_of_nodes(); # or order() and other methods
 graph_degree_global = list(G.degree);
+# Degree is often called the direct friends, it measures how many edges are connected to each node
+# Count of direct edges (friends). Local popularity.
 number_of_edges = G.number_of_edges();
 
 # %% Prints the leader degree - We thought it was the node 0
@@ -272,22 +274,36 @@ print("End");
 # Q2. Compare the node with the highest degree to the node with the highest closeness. Are they the same? Explain why or why not.\
 
 """
-Since closeness calculates the shortest path between nodes, we can easily discover how efficient the information
-can pass through certain nodes, it answers how close am i to everyone
-"""
+Since closeness calculates how near I am to the rest of the nodes, all of them n-1 
+It helps to measure how the information flows, a high closness (since is a global score) could easily prevent
+you from picking up someone who is not very good at reaching the rest of the network (lowest is the worse here)
+And a high closeness, means that i can easily jump with hops between nodes. That means
+high influence, information cost to travel is low, well positioned to access the whole group
 
+"""
 
 closeness_centrality = nx.closeness_centrality(G);
 
-# dict like {node: score}  — e.g. nx.degree_centrality(G)
 ranked = sorted(closeness_centrality.items(), key=lambda pair: pair[1], reverse=True)
-# top 3
+# top 5
+# The information has the shortest paths on average to all other nodes, they are named 0, 2, 33, 31 and 8
 top5Centralities = ranked[:5]
+
+"""
+So the comparisson with the graph_degree_global comes up, 33 is the highest degree but it's not the 
+closeest averarge guy in the network, and we can check this because 33 on the plot, has a bunch of nodes but 
+there are many also far from it. Which could easily mean that the best to get to anybody is stil it's leader
+""" 
 
 
 # %% Clustering Coefficient
 # It measures how I am important to my neibhors. 
 # closest to one, means not that important, close to zero, mean that they can no longer connect without me
+# Answers: how clustered are my neighbords with each other.
+# Close to one, very tigh and forming a triangle.
+# Close to zero, almost none, they are not connected without me.
+# With a high betweness that could mean that I'm the glue of the group.
+# Why this alone doesn't mean anything for bridge analyses?
 
 """
   Conceptual questions
@@ -297,26 +313,40 @@ top5Centralities = ranked[:5]
   2. If node A is connected to B and C, what additional edge would make A part of a triangle?
    - A - B - A - C. The aditional edge that would make A part of a triangle, would be B to C.
   3. Why can a node with many neighbors still have a low clustering coefficient?
-  Because, the clustering coefficient, measures the reciprocate 
-  Because, 
+  Because, the clustering coefficient, measures the neightbors connecting with each other. All though
+  I am connected to them (have many neighbors), they could not be connected to each other.
   4. What is the maximum possible clustering coefficient?
+  - 1
   5. What does a coefficient of 0 mean?
+  - They are not connected at all without me
   6. What does a coefficient of 1 mean for a node?
+  - They are all connected and forming a triangle without the node
+  
+  The reason behind, only clustering coefficient is not enough to find the glue or bridge between groups
+  it's because how it's calculated. While betweness measures the shortest paths taken, CC only pay attention
+  to the average edges that would exist without me. Sounds like "Is my friends know each other?"
+  Betweeness answers: Am I on the shortest path between others?
 """
 
 
 adm_cluster_coefficient_of_index_4 = nx.clustering(administrator_clan, 5)
-# knowing that clustering c oefficient does not remove me, it just questions, how clustered are my neighbords with
-# themselfs, closest to one, very tigh, close to zero, almost none, im the glue of the group
 
 """
-So for instance, i've eran the command in a cleary neighborhood. The number 4, was cluster coefficient zero, people around him barely
-connected
+So for instance, i've ran the command in a cleary neighborhood. The number 4, was cluster coefficient zero, people around him barely
+connected only with in there.
 
-While the number five, got 0.33 not bad but not great (great would be 1)
+While the number five, got 0.33 not bad but not great (great would be 1), so they also depend on me
 
-the same run for the clan administrator thorugh out 0.1, less than the number 5, meaning that he is a super glue or bridge
+the same run for the clan administrator throw out 0.1, less than the number 5, meaning that they 
+depend so much on him to connect to themselfs, that he could be a super glue or bridge
+but, this needs to be measured by betweness
+
 - Near 1: neighbors form a tight, redundant group.
-  - Near 0: neighbors are mostly disconnected from one another
+- Near 0: neighbors are mostly disconnected from one another
 """
+
 adm_cluster_coefficient_of_administrator = nx.clustering(administrator_clan, 33)
+
+# %% Components, Comunities and factions
+
+

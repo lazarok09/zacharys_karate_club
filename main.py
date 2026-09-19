@@ -495,7 +495,13 @@ def plot_graph_by_community(G, communities, title = "Karate Club — colored by 
       
 # usage (after two_communities = next(communities_generator))
 plot_graph_by_community(G, two_communities, "girvan_newman")
+"""
+So its kind of the logic of dividing a group of friends that you want to find 
+which sub groups are inside by removing its bridges, obligating them to form individual comunities
 
+- You have one big friend network. Some friendships are inside tight circles; some are bridges between circles.
+Girvan–Newman keeps deleting the strongest bridges so the big group falls apart into the natural friend circles
+"""
 # %% Modularity with Louvain
 """
 Modularity measures how dense the connections are within subsets of vertices in a graph by comparing the density
@@ -526,3 +532,20 @@ that tries to calculate the random vs grouping and density output came from it.
 louvain_comunities = nx.community.louvain_communities(G, max_level=2, resolution=0.5, seed=42)
 plot_graph_by_community(G, louvain_comunities, "Modularity with Louvain - Small resolution")
 # Are group links denser than chance?
+
+# %% Thereś another way to calculate modularity by greedy
+# Its different than louvain because it merge comunities using the same modularity score but a different
+# implementation, see
+#   Short version: Louvain and greedy don’t “differentiate from the network” differently 
+# in meaning — both mean “this blob is denser than chance.” They
+#   differ in the search: greedy = best merge next; Louvain = best node moves + multilevel collapse. 
+# That’s why partitions can look similar but not identical.
+# they only merge entire comunities, doesnt have a move and collapse like louvain
+
+greedy_comunity = nx.community.greedy_modularity_communities(G);
+plot_graph_by_community(G, greedy_comunity, "Greedy Modularity")
+# Results are different, compare with the first Louvain, the leader formed a different group
+# We are seeing less results, so modularity is better with Louvain on terms that he creates more clusters
+# has a higher precision per say.
+
+

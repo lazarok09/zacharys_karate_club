@@ -2,6 +2,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
+# %% Initiate Karate Club Graph 
 # G is our graph object containing nodes (members) and edges (friendships)
 G = nx.karate_club_graph()
 
@@ -13,7 +14,9 @@ number_of_nodes = G.number_of_nodes(); # or order() and other methods
 graph_degree_global = list(G.degree);
 number_of_edges = G.number_of_edges();
 
-# %% Prints the leader degree - We know it's the node 0, but let's rank to get the degree in a tuple, node/degree
+# %% Prints the leader degree - We thought it was the node 0
+# But we were wrong, the leader of administration has more edges connected to him
+# Let's rank to get the degree in a tuple, node/degree
 
 # node_degree: tuple[int, int]
 def degree_value(node_degree):
@@ -263,6 +266,25 @@ adm_global_efficiency = nx.global_efficiency(G)
 
 print("End");
 
+
+# %% Closeness
+# Q1. Calculate the closeness centrality of every node. Rank the top 5. Explain what high closeness means in this network.
+# Q2. Compare the node with the highest degree to the node with the highest closeness. Are they the same? Explain why or why not.\
+
+"""
+Since closeness calculates the shortest path between nodes, we can easily discover how efficient the information
+can pass through certain nodes, it answers how close am i to everyone
+"""
+
+
+closeness_centrality = nx.closeness_centrality(G);
+
+# dict like {node: score}  — e.g. nx.degree_centrality(G)
+ranked = sorted(closeness_centrality.items(), key=lambda pair: pair[1], reverse=True)
+# top 3
+top5Centralities = ranked[:5]
+
+
 # %% Clustering Coefficient
 # It measures how I am important to my neibhors. 
 # closest to one, means not that important, close to zero, mean that they can no longer connect without me
@@ -271,8 +293,12 @@ print("End");
   Conceptual questions
 
   1. What does a clustering coefficient measure about a node’s neighbors?
+  Measure how those neighbors are connected to each other without the node itself
   2. If node A is connected to B and C, what additional edge would make A part of a triangle?
+   - A - B - A - C. The aditional edge that would make A part of a triangle, would be B to C.
   3. Why can a node with many neighbors still have a low clustering coefficient?
+  Because, the clustering coefficient, measures the reciprocate 
+  Because, 
   4. What is the maximum possible clustering coefficient?
   5. What does a coefficient of 0 mean?
   6. What does a coefficient of 1 mean for a node?
@@ -280,7 +306,7 @@ print("End");
 
 
 adm_cluster_coefficient_of_index_4 = nx.clustering(administrator_clan, 5)
-# knowing that clustering c oefficient does not remove me, it just questions, how c lustered are my neighbords with
+# knowing that clustering c oefficient does not remove me, it just questions, how clustered are my neighbords with
 # themselfs, closest to one, very tigh, close to zero, almost none, im the glue of the group
 
 """

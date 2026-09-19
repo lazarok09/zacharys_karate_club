@@ -32,6 +32,35 @@ Karate's club nodes without the leader
 - [ ]  **Modularity**
 - [ ]  **Greedy modularity detection**
 
-# Sources
-https://networkx.org/documentation/stable/index.html
-https://en.wikipedia.org/wiki/Zachary%27s_karate_club
+## Quick start (from the repo root)
+
+```bash
+cd /home/lazarok/github/zacharys_karate_club
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+pip install -r requirements.txt
+python main.py
+```
+
+Or with the project helper (venv + Spyder-compatible `spyder-kernels`):
+
+```bash
+bash .cursor/skills/spyder-wsl-venv/scripts/setup-spyder-venv.sh .
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Full Cursor / Spyder setup: see [`AGENTS.md`](AGENTS.md).
+
+### What is gitignored
+
+| Path | Ignore? | Why |
+|------|---------|-----|
+| `.venv/` | yes | Local virtualenv; recreate with the steps above |
+| `.spyproject/` | **yes** | Spyder per-machine IDE prefs (workspace, encoding). Not shared source — keep ignored |
+
+## Sources
+
+- https://networkx.org/documentation/stable/index.html
+- https://en.wikipedia.org/wiki/Zachary%27s_karate_club

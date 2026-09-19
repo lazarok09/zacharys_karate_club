@@ -1,0 +1,7 @@
+networkx>=3.0
+matplotlib>=3.8
+numpy>=1.26
+jupyter>=1.0
+ipykernel>=6.29
+# Spyder 5.x on Ubuntu/WSL (apt spyder 5.5.1). For Spyder 6 use: spyder-kernels>=3,<4
+spyder-kernels==2.5.*

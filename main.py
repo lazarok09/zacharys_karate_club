@@ -467,7 +467,9 @@ plot_each_community(G, two_communities);
 
 # %% Ploting the two comunities with differernt colors
 
-def plot_graph_by_community(G, communities, seed=42, scale=3000):
+def plot_graph_by_community(G, communities, title = "Karate Club — colored by community"):
+      seed=42;
+      scale=3000;
       """
       Plot the full graph with nodes colored by community membership.
       """
@@ -488,9 +490,39 @@ def plot_graph_by_community(G, communities, seed=42, scale=3000):
           node_size=get_node_sizes(G, scale),
           font_weight="bold",
       )
-      plt.title("Karate Club — colored by community")
+      plt.title(title)
       plt.show();
       
 # usage (after two_communities = next(communities_generator))
-plot_graph_by_community(G, two_communities)
+plot_graph_by_community(G, two_communities, "girvan_newman")
 
+# %% Modularity with Louvain
+"""
+Modularity measures how dense the connections are within subsets of vertices in a graph by comparing the density
+to that which would be expected from a random graph
+"""
+# the algorithm that uses modularity is the Louvain/Levan, itś step follows
+# 1 - each vertice forms itś own comunity
+# vertices moved into other comunities, modularity recalculated, until it no longer increases modularity
+# combines comunities if modularity improves
+# repeat all above until no better results are achieved
+
+# using modularity to calculate the groups and ploting
+# Louvain doesnt return a tuple, its a list already, a Set list. No next fn needed
+louvain_comunities = nx.community.louvain_communities(G)
+
+plot_graph_by_community(G, louvain_comunities, "Modularity with Louvain")
+# At first view, 4 comunities was created, a couple of marginals, people that form their own group
+# we also saw that kind of when we splited by removing the leader, thats crazy.
+# Modularity is maxmized by louvain because of the way its calculated, betweness is the focus with girvan's algo
+"""
+It answers: are links denser inside each group then you would expect by chance? - nature of random algo
+that tries to calculate the random vs grouping and density output came from it.
+
+"""
+
+# %% Louvain max_level 2 and small resolution
+# There's a way to compare the plots also using Louvain results
+louvain_comunities = nx.community.louvain_communities(G, max_level=2, resolution=0.5, seed=42)
+plot_graph_by_community(G, louvain_comunities, "Modularity with Louvain - Small resolution")
+# Are group links denser than chance?

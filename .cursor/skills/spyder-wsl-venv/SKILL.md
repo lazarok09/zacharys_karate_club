@@ -212,6 +212,7 @@ If traceback shows `/usr/lib/python3/dist-packages/spyder_kernels/`, Spyder is *
 - apt Spyder lives under `/usr/lib/python3/dist-packages/spyder*`.
 - Kernel crash logs often under `/tmp/spyder-<user>/kernel-*.stderr`.
 - Cursor/VS Code "Connected to .venv" is independent of Spyder. Fix each IDE separately.
+- Zed + Jupyter is separate too — see [../zed-jupyter/SKILL.md](../zed-jupyter/SKILL.md).
 
 ## What not to do
 

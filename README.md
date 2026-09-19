@@ -51,7 +51,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Full Cursor / Spyder setup: see [`AGENTS.md`](AGENTS.md).
+### Zed + Jupyter (optional)
+
+Register the project venv as a Jupyter kernel (already covered by `requirements.txt` → `ipykernel`):
+
+```bash
+source .venv/bin/activate
+python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
+```
+
+Project kernel pick lives in [`.zed/settings.json`](.zed/settings.json). Native `.ipynb` in Zed still needs preview flags + `LOCAL_NOTEBOOK_DEV=1` (Windows user env when Zed is a Windows app). Open this repo as a **WSL** workspace so the Linux kernel resolves.
+
+Full Cursor / Spyder / Zed setup: see [`AGENTS.md`](AGENTS.md). Zed skill: [`.cursor/skills/zed-jupyter/SKILL.md`](.cursor/skills/zed-jupyter/SKILL.md).
 
 ### What is gitignored
 
@@ -59,6 +70,7 @@ Full Cursor / Spyder setup: see [`AGENTS.md`](AGENTS.md).
 |------|---------|-----|
 | `.venv/` | yes | Local virtualenv; recreate with the steps above |
 | `.spyproject/` | **yes** | Spyder per-machine IDE prefs (workspace, encoding). Not shared source — keep ignored |
+| `.zed/` | **no** | Shared Zed project settings (kernel selection); commit `.zed/settings.json` |
 
 ## Sources
 

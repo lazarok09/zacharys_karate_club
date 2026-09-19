@@ -348,5 +348,149 @@ but, this needs to be measured by betweness
 adm_cluster_coefficient_of_administrator = nx.clustering(administrator_clan, 33)
 
 # %% Components, Comunities and factions
+# A comunity is basically a densily connected subset of vertices. A small comunity can be highly connected while
+# being not that important to the rest of the network. Thatś why we need to divide to conquer.
 
+"""
+A component its basically a connected subset of graphs. A graph is made of nodes 
+which can be connected by one of the means below
+
+ strongily connected (triangle)
+ unilaterely connected - A -> B -> C
+ weakly connected - C <- A -> B
+
+Strong / unilateral / weak are for directed graphs.
+
+Karate club is undirected → you mainly need: is it one connected component, or several?
+  
+Very useful to measure density (average global score of how connected the vertices are) 
+Because deensity is infinite (not useful) for disconnected graphs, it breaks
+So we need to know how to identify them, find the largest connected component, to measure density and pull insights
+
+"""
+# Theres a concept with an algorithm that will help us to cut in the best place the vertices to create
+# subgroups. Itś called A minimum cut is a cut where no other cut exists in G with a smaller number of edges
+# It uses algorithms like Wagner (Stoer & Wagner 1977)
+
+# %% Comunities
+# Created by partitions on a network to create sub graphs with high density between its connected vertices
+# With also, a low edge densitybetween vertices of different clusters.
+# That creates highly connected clusters (communities)
+# Algorithm is Louvan, it's the fastest. We also have Leidan
+# Girvan-Newman algorithm operates in a very different way by starting 
+# with an entire graph and progressively removing important edges to potentially 
+# reveal high modularity subgroups. - Liked that one
+"""
+Vertex clustering refers to the process of partitioning a graph in order to satisfy a certain objective. 
+Most commonly in organizational network analysis, that objective is to achieve a high edge density between 
+the vertices inside a cluster, and a low edge density between vertices that are in different clusters. 
+Such highly connected clusters are usually referred to as communities 
+and the process of determining optimal communities in a graph is known as community detection 
+or community discover
+"""
+
+# Exercise - create comunities with the network and use a clustering method that cuts on 2 subgraphs
+# that would in theory help us to analyse how the group could be and if by degree and betweness, their 
+# "subleaders" would be listed, and if we could capture the real world analysed split
+
+# %% Community Discovery
+"""
+ For the karate club you usually keep one connected graph.
+ You do not delete edges first to force two components. \
+You label each member as “side A /   side B” while friendships stay as they were.
+
+communities are the network guess; factions are what happened in real life. 
+You compare the guess to the true split (instructor vs administrator).
+
+“Which algorithm calculates faction?”
+
+None invents “faction.” Algorithms do community detection (a partition). 
+That partition is your guess of the factions.
+"""
+# Let's start by using the comunity detection of Girvan Newman
+# We are using the original network
+communities_generator = nx.community.girvan_newman(G)
+# After generating the comunity
+# The next step answers “so what — who leads, who bridges, and what do we do?”
+# next function, do the first partition, if I want two comunities, then I just need to run next one time 
+# and the tuple will return two frozen partition
+
+two_communities = next(communities_generator)
+# Now with the nodes already organized on their comunities by betweness (nature of the algo)
+# We can proceed to plot them
+
+# %% Communities Plot
+
+def get_node_sizes(G, scale=3000):
+      """
+      Calculates a drawing size for each node based on degree centrality.
+      Args:
+          G: A NetworkX graph.
+          scale: Multiplier that makes size differences visible.
+      Returns:
+          A list of node sizes in graph node order.
+      """
+      degree_centrality = nx.degree_centrality(G)
+      return [
+          degree_centrality[node] * scale
+          for node in G.nodes()
+      ]
+
+  
+def plot_each_community(G, communities, seed=42, scale=3000):
+      """
+      Plot one figure per community as its own subgraph.
+      Args:
+          G: full NetworkX graph
+          communities: iterable of node sets (e.g. from girvan_newman)
+          seed: spring layout seed for reproducible layouts
+          scale: node size multiplier from degree centrality
+      """
+      colors = ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3"]
+      for community_id, members in enumerate(communities):
+          subgraph = G.subgraph(members).copy()
+          pos = nx.spring_layout(subgraph, seed=seed)
+          plt.figure(figsize=(8, 6))
+          nx.draw(
+              subgraph,
+              pos,
+              with_labels=True,
+              node_color=colors[community_id % len(colors)],
+              edge_color="gray",
+              node_size=get_node_sizes(subgraph, scale),
+              font_weight="bold",
+          )
+          plt.title(f"Community {community_id} (n={subgraph.number_of_nodes()})")
+          plt.show()
+          
+plot_each_community(G, two_communities);
+
+# %% Ploting the two comunities with differernt colors
+
+def plot_graph_by_community(G, communities, seed=42, scale=3000):
+      """
+      Plot the full graph with nodes colored by community membership.
+      """
+      node_color = {}
+      for community_id, members in enumerate(communities):
+          for node in members:
+              node_color[node] = community_id
+      colors = [node_color[n] for n in G.nodes()]
+      pos = nx.spring_layout(G, seed=seed)
+      plt.figure(figsize=(10, 8))
+      nx.draw(
+          G,
+          pos,
+          with_labels=True,
+          node_color=colors,
+          cmap=plt.cm.Set3,
+          edge_color="gray",
+          node_size=get_node_sizes(G, scale),
+          font_weight="bold",
+      )
+      plt.title("Karate Club — colored by community")
+      plt.show();
+      
+# usage (after two_communities = next(communities_generator))
+plot_graph_by_community(G, two_communities)
 

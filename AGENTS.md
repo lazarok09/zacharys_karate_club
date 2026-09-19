@@ -1,6 +1,6 @@
 # AGENTS.md — Zachary's Karate Club
 
-Guide for humans and coding agents configuring this repo on **WSL2 / Ubuntu** with a project **venv**, **Cursor**, and optional **Spyder**.
+Guide for humans and coding agents configuring this repo on **WSL2 / Ubuntu** with a project **venv**, **Cursor**, optional **Spyder**, and optional **Zed + Jupyter**.
 
 ## What this project is
 
@@ -8,10 +8,12 @@ Social-network analysis notebook/script around NetworkX's `karate_club_graph()`:
 
 | File | Role |
 |------|------|
-| `main.py` | Primary script (Spyder `# %%` cells / Cursor) |
-| `main.ipynb` | Notebook variant |
-| `requirements.txt` | Python deps for the project venv |
+| `main.py` | Primary script (`# %%` cells / Cursor / Zed REPL / Spyder) |
+| `main.ipynb` | Notebook variant (Cursor / Zed preview) |
+| `requirements.txt` | Python deps for the project venv (`ipykernel`, `jupyter`, …) |
+| `.zed/settings.json` | Zed project kernel selection (`myenv`) |
 | `.cursor/skills/spyder-wsl-venv/` | Skill for Spyder + WSL2 + venv diagnosis |
+| `.cursor/skills/zed-jupyter/` | Skill for Zed + Jupyter / REPL / `.ipynb` preview |
 
 ## One-time setup (recommended)
 
@@ -69,6 +71,44 @@ In a Python cell, bare `pip install ...` is a `SyntaxError`. Use:
 ```
 
 or install from a terminal with the venv active.
+
+## Zed + Jupyter (optional, Windows Zed + WSL project)
+
+Zed's REPL uses Jupyter kernels. This repo registers the venv as kernel **`myenv`** (display name **Python (myenv)**).
+
+### One-time kernel registration
+
+With the project venv active (after `pip install -r requirements.txt`):
+
+```bash
+python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
+jupyter kernelspec list
+# myenv → .../zacharys_karate_club/.venv/bin/python
+```
+
+### Project + user config
+
+| Piece | Expected |
+|-------|----------|
+| `.zed/settings.json` | `jupyter.kernel_selections.python = "myenv"` |
+| `%APPDATA%\Zed\settings.json` | `feature_flags.notebooks` / `tabular-data-preview` = `"on"`; same kernel selection |
+| Windows user env | `LOCAL_NOTEBOOK_DEV=1` (needed for native `.ipynb` UI; full Zed restart after setting) |
+
+Open this repo as a **WSL** workspace in Zed so Linux kernelspecs resolve. Then:
+
+1. Command palette → **`repl: refresh kernelspecs`**
+2. Pick **Python (myenv)** if prompted
+3. Run `main.py` `# %%` cells with **`repl: run`** (`ctrl-shift-enter`), or open `main.ipynb`
+
+If `.ipynb` shows raw JSON, the preview gate is incomplete (env and/or feature flags). Stable path: `# %%` REPL in `main.py`.
+
+### Agent skill
+
+When diagnosing Zed / Jupyter / kernel / `.ipynb` preview issues, agents should follow:
+
+`.cursor/skills/zed-jupyter/SKILL.md`
+
+Extra detail: `.cursor/skills/zed-jupyter/reference.md`
 
 ## Spyder (optional, apt Spyder 5.x on WSL)
 
@@ -129,7 +169,7 @@ With venv active:
 
 ```bash
 python main.py
-# or open main.py / main.ipynb in Cursor or Spyder and run cells
+# or open main.py / main.ipynb in Cursor, Zed, or Spyder and run cells
 ```
 
 Typical imports: `networkx`, `matplotlib.pyplot`.
@@ -142,16 +182,21 @@ Typical imports: `networkx`, `matplotlib.pyplot`.
 - [ ] Do not pip into /usr/bin/python3
 - [ ] Spyder only after spyder-kernels 2.5.* is in .venv (Spyder 5)
 - [ ] If Spyder dies, --revert-spyder before more preference thrashing
+- [ ] Zed: myenv kernelspec registered; .zed/settings.json present; WSL workspace
+- [ ] Zed .ipynb preview: LOCAL_NOTEBOOK_DEV=1 + feature_flags.notebooks=on (full restart)
 - [ ] Prefer editing main.py cells; keep changes minimal and match existing style
 ```
 
-## Config file map (Spyder on this host)
+## Config file map (this host)
 
 | Path | Purpose |
 |------|---------|
 | `~/.config/spyder-py3/config/spyder.ini` | `main_interpreter.custom` / `default` |
 | `~/.config/spyder-py3/config/transient.ini` | `executable`, `custom_interpreter` |
 | `.vscode/settings.json` | Cursor/VS Code interpreter |
-| `.gitignore` | ignores `.venv/`, `.spyproject` |
+| `.zed/settings.json` | Zed Jupyter kernel selection (`myenv`) |
+| `%APPDATA%\Zed\settings.json` | Zed user prefs + notebook feature flags (Windows) |
+| `~/.local/share/jupyter/kernels/myenv/` | Registered Jupyter kernelspec → `.venv` |
+| `.gitignore` | ignores `.venv/`, `.spyproject` (not `.zed/`) |
 
-Selecting a custom path while `custom = False` leaves Spyder on system Python — a common silent failure. See the skill for the exact keys.
+Selecting a custom Spyder path while `custom = False` leaves Spyder on system Python — a common silent failure. See the Spyder skill for the exact keys.
